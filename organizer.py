@@ -1,4 +1,4 @@
-import os,sys
+import os,sys,subprocess
 from PIL import Image
 if(len(sys.argv)<2):
 	print('provide the directory or enter "s" to selct the current directory')
@@ -27,13 +27,22 @@ def getDims(filename):
 		im=Image.open(filename)
 		return im.size
 	except IOError:
-		pass
+		return None
 
 for root,dirs,files in os.walk(workDir):
 	for name in files:
 		dim=getDims(name)
 		if dim is not None:
 			organize("{}x{}".format(dim[0],dim[1]),name)
+if sys.platform.startswith('darwin'):
+	subprocess.call(('open', workDir))
+	sys.exit()
+elif os.name == 'nt':
+	os.startfile(workDir)
+	sys.exit()
+elif os.name == 'posix':
+	subprocess.call(('xdg-open', workDir))
+	sys.exit()
 
 
 
